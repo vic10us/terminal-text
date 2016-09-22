@@ -1,60 +1,36 @@
 <link rel="import" href="../polymer/polymer.html">
+<script src="../web-animations-js/web-animations.min.js"></script>
 
 <dom-module id="terminal-text">
   <template>
     <style>
 
       :host {
-        --terminal-text-cursor: { 
-          color: black;
-        };
-
-        --terminal-text-pre-text: {
-          color: black;
-          font-weight: 600;
-        };
+        display: block;
+        --terminal-text-text-color0: #000000;
+        --terminal-text-pre-text-color0: #000000;
+        --terminal-text-cursor-color0: #000000;
       }
 
       .cursor {
-        color: darkgreen;
+        color: var(--terminal-text-cursor-color, --terminal-text-cursor-color0);
+        font-weight: 600;
       }
       
-      .blink_me {
-        -webkit-animation: blink 0.75s linear infinite;
-        -moz-animation: blink 0.75s linear infinite;
-        -ms-animation: blink 0.75s linear infinite;
-        -o-animation: blink 0.75s linear infinite;
-        animation: blink 0.75s linear infinite;
-        opacity: 1;
-        will-change: opacity;
+      .animated-text {
+        white-space: pre-wrap;
+        color: var(--terminal-text-text-color, --terminal-text-text-color0);
+        @apply(--terminal-text-text);
       }
 
       .pre-text {
-        color: darkgreen;
+        color: var(--terminal-text-pre-text-color, --terminal-text-pre-text-color0);
+        font-weight: 600;
         @apply(--terminal-text-pre-text);
       }
-
-      @keyframes "blink" {
-        50% { opacity: 0; }
-      }
-
-      @-moz-keyframes blink {
-        50% { opacity: 0; }
-      }
-
-      @-webkit-keyframes "blink" {
-        50% { opacity: 0; }
-      }
-
-      @-ms-keyframes "blink" {
-        50% { opacity: 0; }
-      }
-
-      @-o-keyframes "blink" {
-        50% { opacity: 0; }
-      }
     </style>
-    <div><span class="pre-text">[[prefix]]</span><span class="animated-text">[[_output]]<span hidden$="[[!showCursor]]" class$="cursor [[_cursorClass(blink)]]">[[cursor]]</span></div>
+    <template content="[[_content]]"></template>
+    <div><span class="pre-text">[[prefix]]</span><span class="animated-text">[[ nl2br(_output) ]]<span id="cursor" hidden$="[[!showCursor]]" class="cursor">[[cursor]]</span></div>
   </template>
 
   <script>
@@ -66,62 +42,91 @@
       is: 'terminal-text',
 
       properties: {
+        /**
+         * 	List of strings to output.
+         */
         text: {
           type: Array,
-          value: ['one','two','three'],
+          value: ['Lorem\n ipsum alb~3dolor sit amet.','Donec ^1000molestie ultricies velit, tempus.','Etiam quis iaculis nunc, vitae.'],
         },
+        /**
+         * Minimum delay, in ms, between typing characters.
+         */
         typeDelay: {
           type: Number,
           value: 100
         },
+        /**
+         * Minimum delay, in ms, between deleting characters.
+         */
         backDelay: {
           type: Number,
           value: 50
         },
+        /**
+         * Interval, in ms, that the cursor will flash.
+         */
         blinkSpeed: {
           type: Number,
-          value: 1000
+          value: 500
         },
-        delay: {
-          type: Number,
-          value: 2000
-        },
-        preserve: {
-          type: Boolean,
-          value: false
-        },
-        backDelay: {
-          type: Number,
-          value: 50
-        },
-        prefix: {
-          type: String,
-          value: '[terminal-text ~]# '
-        },
-        loop: {
-          type: Number,
-          value: 0
-        },
-        humanize: {
-          type: Boolean,
-          value: true
-        },
-        smoothBlink: {
-          type: Boolean,
-          value: true
-        },
+        /**
+         * Character used to represent the cursor.
+         */
         cursor: {
           type: String,
           value: '▋'
         },
+        /**
+         * Time in ms to pause before deleting the current text.
+         */
+        delay: {
+          type: Number,
+          value: 2000
+        },
+        /**
+         * Prevent auto delete of the current string and begin outputting the next string.
+         */
+        preserve: {
+          type: Boolean,
+          value: false
+        },
+        /**
+         * Begin each string with this prefix value.
+         */
+        prefix: {
+          type: String,
+          value: '[terminal-text ~]# '
+        },
+        /**
+         * Number of times to loop through the output strings, for unlimited use 0.
+         */
+        loop: {
+          type: Number,
+          value: 0
+        },
+        /**
+         * Add a random delay before each character to represent human interaction.
+         */
+        humanize: {
+          type: Boolean,
+          value: false
+        },
+        /**
+         * Blink the cursor.
+         */
         blink: {
           type: Boolean,
           value: true
         },
+        /**
+         * Show the cursor leading the text.
+         */
         showCursor: {
           type: Boolean,
           value: true
         },
+
         _current: {
           type: Object,
           value: {
@@ -134,7 +139,14 @@
         _output: {
           type: String,
           value: ''
+        },
+        _cursorAnimation: {
+          type: Object,
+          value: {}
         }
+      },
+      nl2br: function(txt) {
+        return txt; //txt.replace(/\n/, '<br />');
       },
       _next: function() {
         this._current.index++;
@@ -182,13 +194,21 @@
             }
             return;
           }
-        } else if ( letter == '\\' ) {
+        }
+        if ( letter == '|' ) {
+          var value = this._current.string.substr( start, 1 );
+          this.cursor = value;
+          this._current.string = this._current.string.replace( letter + value , '' );
+          this._type();
+          return;
+        }
+         /*else if ( letter == '\\' ) {
           var nextChar = this._current.string.substr( start, 1 );
           if ( nextChar == 'n' ) {
             this._current.position++;
-            letter = '<br />';
+            letter = '\\n';
           }
-        }
+        }*/
         if ( letter !== undefined ) {
           // output.html( output.html() + letter );
           this._output = this._output + letter;
@@ -198,7 +218,7 @@
           this.async( function() { this._type(); }, this._delay( this.typeDelay, this ) );
         } else if ( this.preserve === false ) {
           this.async( function() {
-            this.async( function() { this._backspace(0) }, this._delay( this.backDelay, this ) );
+            this.async( function() { this._backspace(); }, this._delay( this.backDelay, this ) );
           }, this.delay );
         } else {
           this._output = '';
@@ -239,21 +259,53 @@
       },
       _delay: function(speed, t) {
         var time = parseInt( speed );
-        if ( this.humanise ) {
+        if ( this.humanize ) {
           time += Math.floor( Math.random() * 200 );
         }
         return time;
       },
       _setCurrentString: function() {
-        this._current.string = this.text[this._current.index].replace(/\n/g, "\\n");
+        if (!!this.text) {
+          this._current.string = this.text[this._current.index]; // .replace(/\n/g, "\\n");
+        }
+      },
+      _animateCursor: function() {
+        if (!!!this._cursorAnimation || !!!this._cursorAnimation.playState) {
+          var elem = this.$.cursor;
+          this._cursorAnimation = elem.animate({
+            opacity: [0, 1],
+            transform: ['scale(0.5)', 'scale(1)'],
+          }, {
+            direction: 'alternate',
+            duration: this.blinkSpeed,
+            iterations: Infinity,
+          });
+        }
+        this._cursorAnimation.play();
       },
       ready: function() {
         this._setCurrentString();
         this._type();
+        if (this.blink) {
+          this._animateCursor();
+        }
       },
       _cursorClass: function(b) {
         return b ? 'blink_me' : 'no-blink';
-      }
+      },
+      _blinkChanged: function(b){
+        if (!!!b && !!this._cursorAnimation) {
+          this._cursorAnimation.pause();
+          this._cursorAnimation.currentTime = this.blinkSpeed;
+          return;
+        }
+        if (!!b) {
+          this._animateCursor();
+        }
+      },
+      observers: [
+        '_blinkChanged(blink)'
+      ]
     });
   </script>
 </dom-module>
