@@ -214,7 +214,7 @@
           }, this.delay );
         } else {
           this._output = '';
-          if ( this.next() ) {
+          if ( this._next() ) {
             this.async( function() {
               this.async( function() { this._type(); }, this._delay( this.typeDelay ) );
             }, this.delay );
