@@ -202,30 +202,21 @@
           this._type();
           return;
         }
-         /*else if ( letter == '\\' ) {
-          var nextChar = this._current.string.substr( start, 1 );
-          if ( nextChar == 'n' ) {
-            this._current.position++;
-            letter = '\\n';
-          }
-        }*/
         if ( letter !== undefined ) {
-          // output.html( output.html() + letter );
           this._output = this._output + letter;
         }
         this._current.position++;
         if ( this._current.position < this._current.string.length ) {
-          this.async( function() { this._type(); }, this._delay( this.typeDelay, this ) );
+          this.async( function() { this._type(); }, this._delay( this.typeDelay ) );
         } else if ( this.preserve === false ) {
           this.async( function() {
-            this.async( function() { this._backspace(); }, this._delay( this.backDelay, this ) );
+            this.async( function() { this._backspace(); }, this._delay( this.backDelay ) );
           }, this.delay );
         } else {
           this._output = '';
-          // output.html( output.html() + '<span class="teletype-prefix">' + this.prefix + '</span>' );
-          if ( next() ) {
+          if ( this.next() ) {
             this.async( function() {
-              this.async( function() { this._type(); }, this._delay( this.typeDelay, this ) );
+              this.async( function() { this._type(); }, this._delay( this.typeDelay ) );
             }, this.delay );
           } else if ( typeof( this.callbackFinished ) == 'function' ) {
             this.callbackFinished( object );
@@ -241,7 +232,6 @@
         }
         if ( this._current.position > stop ) {
           this._output = this._output.slice(0, -1);
-          // output.html( output.html().slice( 0, -1 ) );
           this.async( function() {
             this._backspace( stop );
           }, this._delay( this.backDelay ) );
