@@ -168,17 +168,17 @@
           if ( this._isNumeric( value ) ) {
             this._current.string = this._current.string.replace( letter + value, '' );
             if ( letter == '^' ) {
-              window.setTimeout( function() {
-                window.setTimeout( function() {
+              this.async( function() {
+                this.async( function() {
                   this._type();
-                }.bind(this), this._delay( this.typeDelay ) );
-              }.bind(this), value );
+                }, this._delay( this.typeDelay ) );
+              }, value );
             } else {
               var index = this._current.position - value;
               this._current.string = this._current.string.substr( 0, index - 1 ) + this._current.string.substr( this._current.position - 1 );
-              window.setTimeout( function() {
+              this.async( function() {
                 this._backspace( Math.max( index, 0 ) );
-              }.bind(this), this._delay( this.backDelay ) );
+              }, this._delay( this.backDelay ) );
             }
             return;
           }
@@ -195,18 +195,18 @@
         }
         this._current.position++;
         if ( this._current.position < this._current.string.length ) {
-          window.setTimeout( function() { this._type(); }.bind(this), this._delay( this.typeDelay, this ) );
+          this.async( function() { this._type(); }, this._delay( this.typeDelay, this ) );
         } else if ( this.preserve === false ) {
-          window.setTimeout( function() {
-            window.setTimeout( function() { this._backspace(0) }.bind(this), this._delay( this.backDelay, this ) );
-          }.bind(this), this.delay );
+          this.async( function() {
+            this.async( function() { this._backspace(0) }, this._delay( this.backDelay, this ) );
+          }, this.delay );
         } else {
           this._output = '';
           // output.html( output.html() + '<span class="teletype-prefix">' + this.prefix + '</span>' );
           if ( next() ) {
-            window.setTimeout( function() {
-              window.setTimeout( function() { this._type(); }.bind(this), this._delay( this.typeDelay, this ) );
-            }.bind(this), this.delay );
+            this.async( function() {
+              this.async( function() { this._type(); }, this._delay( this.typeDelay, this ) );
+            }, this.delay );
           } else if ( typeof( this.callbackFinished ) == 'function' ) {
             this.callbackFinished( object );
           }
@@ -222,9 +222,9 @@
         if ( this._current.position > stop ) {
           this._output = this._output.slice(0, -1);
           // output.html( output.html().slice( 0, -1 ) );
-          window.setTimeout( function() {
+          this.async( function() {
             this._backspace( stop );
-          }.bind(this), this._delay( this.backDelay ) );
+          }, this._delay( this.backDelay ) );
           this._current.position--;
         } else {
           if ( stop === 0 ) {
@@ -232,9 +232,9 @@
               return;
             }
           }
-          window.setTimeout( function() { 
+          this.async( function() { 
             this._type(); 
-          }.bind(this), this._delay( this.typeDelay ) );
+          }, this._delay( this.typeDelay ) );
         }
       },
       _delay: function(speed, t) {
@@ -247,19 +247,8 @@
       _setCurrentString: function() {
         this._current.string = this.text[this._current.index].replace(/\n/g, "\\n");
       },
-      _setCursor: function() {
-
-      },
-      _do: function() {
-        this._output += 'a';
-        window.setTimeout(function() {
-          this._do();
-        }.bind(this), 500);
-      },
       ready: function() {
-        /*window.setTimeout(function() {
-          this._do();
-        }.bind(this), 1000);*/
+        this._setCurrentString();
         this._type();
       },
       _cursorClass: function(b) {
