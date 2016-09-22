@@ -1,29 +1,46 @@
-<!doctype html>
-<html>
-  <head>
-    <title>terminal-text demo</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script>window.Polymer = { lazyRegister: 'max', useNativeCSSProperties: 1 };</script>
-    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
 
-    <link rel="import" href="../terminal-text.html">
+<!DOCTYPE html>
+	<head>
+		<title>Polymer terminal-text Demo</title>
+		<link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
 
-    <style is="custom-style" include="demo-pages-shared-styles">
-    </style>
-  </head>
-  <body>
+        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+        <link rel="import" href="../terminal-text.html">
 
-    <div class="vertical-section-container centered">
-      <h3>Basic terminal-text Demo</h3>
-      <demo-snippet>
-        <template>
-          <terminal-text id="tt"></terminal-text>
-        </template>
-      </demo-snippet>
-    </div>
-
-  </body>
+		<meta name="viewport" content="width=800" />
+		<meta charset="UTF-8" />
+		<style is="custom-style">
+            html, body { 
+                min-width: 800px; 
+                padding: 0;
+                margin: 0; 
+                font-family: 'Montserrat', helvetica, sans-serif; 
+                background: #222; 
+                color: #fff; 
+                font-size: 20pt; 
+                line-height: 1.5; 
+                padding: 2%; 
+            }
+            h1 { margin: 0; padding: 0; }
+            terminal-text {
+                --terminal-text-pre-text-color: #00ff00;
+                --terminal-text-text-color: #fff;
+                --terminal-text-cursor-color: #00ff00;
+            }
+            .teletype-prefix, .teletype-cursor { color: #00bd9c; }
+            #fork-me { position: absolute; top: 0; right: 0; border: 0; }
+		</style>
+	</head>
+	<body>
+		<h1>Polymer terminal-text</h1>
+        <p>
+        <terminal-text 
+            id="tt"
+            text='["auti~1o^1000 type terminal commands.","including new lines,\npauses^2000, character deletion~20 and other features."," auto delete^2000, customisable cursor.|_^2000|▋"," and loads~5 more..."," what will you do?"]'
+        </terminal-text>
+        </p>
+        <a id="fork-me" href="https://github.com/vic10us/terminal-text">
+			<img src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png" />
+		</a>
+	</body>
 </html>
