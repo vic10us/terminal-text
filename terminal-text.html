@@ -30,13 +30,10 @@
       }
     </style>
     <template content="[[_content]]"></template>
-    <div><span class="pre-text">[[prefix]]</span><span class="animated-text">[[ nl2br(_output) ]]<span id="cursor" hidden$="[[!showCursor]]" class="cursor">[[cursor]]</span></div>
+    <span class="pre-text">[[prefix]]</span><span class="animated-text">[[ textFormat(_output) ]]<span id="cursor" hidden$="[[!showCursor]]" class="cursor">[[cursor]]</span>
   </template>
 
   <script>
-    function isNumeric(n) {
-      return !isNaN(parseFloat(n)) && isFinite(n);
-    }
     Polymer({
 
       is: 'terminal-text',
@@ -45,14 +42,16 @@
         _version: {
           type: String,
           readonly: true,
-          value: 'v1.0.7'
+          value: 'v1.0.8'
         },
         /**
          * 	List of strings to output.
          */
         text: {
           type: Array,
-          value: ['Lorem\n ipsum alb~3dolor sit amet.','Donec ^1000molestie ultricies velit, tempus.','Etiam quis iaculis nunc, vitae.'],
+          value: function() { 
+            return ['Lorem\n ipsum alb~3dolor sit amet.','Donec ^1000molestie ultricies velit, tempus.','Etiam quis iaculis nunc, vitae.']; 
+          }
         },
         /**
          * Minimum delay, in ms, between typing characters.
@@ -142,11 +141,13 @@
 
         _current: {
           type: Object,
-          value: {
-            string: '',
-            index: 0,
-            position: 0,
-            loop: 0
+          value: function() {
+            return {
+              str: '',
+              index: 0,
+              position: 0,
+              loop: 0
+            };
           }
         },
         value: {
@@ -161,11 +162,11 @@
         },
         _cursorAnimation: {
           type: Object,
-          value: {}
+          value: function() { return {}; }
         }
       },
-      nl2br: function(txt) {
-        return txt; //txt.replace(/\n/, '<br />');
+      textFormat: function(txt) {
+        return txt;
       },
       _next: function() {
         this._current.index++;
@@ -177,7 +178,7 @@
           }
         }
         this._current.position = 0;
-        this._setCurrentString(this);
+        this._setCurrentString();
         if ( typeof( this.callbackNext ) == 'function' ) {
           this.callbackNext( this._current, object );
         }
@@ -187,63 +188,65 @@
         return !isNaN(parseFloat(n)) && isFinite(n);
       },
       _type: function() {
-        var letters = this._current.string.split( '' ),
+        if (!!!this._current.str || this._current.str.length <= 0) {
+          return;
+        }
+        var letters = this._current.str.split( '' ),
           letter = letters[this._current.position],
           start = this._current.position + 1;
         if ( letter == '^' || letter == '~' ) {
-          var end = this._current.string.substr( start ).search( /[^0-9]/ );
+          var end = this._current.str.substr( start ).search( /[^0-9]/ );
           if ( end == -1 ) {
-            end = this._current.string.length;
+            end = this._current.str.length;
           }
-          var value = this._current.string.substr( start, end );
+          var value = this._current.str.substr( start, end );
           if ( this._isNumeric( value ) ) {
-            this._current.string = this._current.string.replace( letter + value, '' );
+            this._current.str = this._current.str.replace( letter + value, '' );
             if ( letter == '^' ) {
               this.async( function() {
                 this.async( function() {
-                  this._type();
-                }, this._delay( this.typeDelay ) );
-              }, value );
+                  var that = this;
+                  that._type();
+                }.bind(this), this._delay( this.typeDelay ) );
+              }.bind(this), value );
             } else {
               var index = this._current.position - value;
-              this._current.string = this._current.string.substr( 0, index - 1 ) + this._current.string.substr( this._current.position - 1 );
+              this._current.str = this._current.str.substr( 0, index - 1 ) + this._current.str.substr( this._current.position - 1 );
               this.async( function() {
                 this._backspace( Math.max( index, 0 ) );
-              }, this._delay( this.backDelay ) );
+              }.bind(this), this._delay( this.backDelay ) );
             }
             return;
           }
         }
         if ( letter == '|' ) {
-          var value = this._current.string.substr( start, 1 );
+          var value = this._current.str.substr( start, 1 );
           this.cursor = value;
-          this._current.string = this._current.string.replace( letter + value , '' );
+          this._current.str = this._current.str.replace( letter + value , '' );
           this._type();
           return;
         }
         if ( letter !== undefined ) {
-          this._output = this._output + letter;
+          this._output += letter;
         }
         this._current.position++;
-        if ( this._current.position < this._current.string.length ) {
-          this.async( function() { this._type(); }, this._delay( this.typeDelay ) );
+        if ( this._current.position < this._current.str.length ) {
+          this.async( function() { this._type(); }.bind(this), this._delay( this.typeDelay ) );
         } else if ( this.preserve === false ) {
           this.async( function() {
-            this.async( function() { this._backspace(); }, this._delay( this.backDelay ) );
-          }, this.delay );
+            var that = this;
+            that.async( function() { this._backspace(); }.bind(that), this._delay( this.backDelay ) );
+          }.bind(this), this.delay );
         } else {
           if ( this._next() ) {
             this.async( function() {
               this._output = '';
               this._type();
-            }, this.clearDelay );
-          } else if ( typeof( this.callbackFinished ) == 'function' ) {
-            this.callbackFinished( object );
+            }.bind(this), this.clearDelay );
           }
+          this.fire('terminal-text-finished', { value: this._output });
         }
-        if ( typeof( this.callbackType ) == 'function' ) {
-          this.callbackType( letter, this._current, object );
-        }
+        this.fire('terminal-text-type', { letter: letter, current: this._current });
       },
       _backspace: function(stop) {
         if ( !stop ) {
@@ -253,17 +256,17 @@
           this._output = this._output.slice(0, -1);
           this.async( function() {
             this._backspace( stop );
-          }, this._delay( this.backDelay ) );
+          }.bind(this), this._delay( this.backDelay ) );
           this._current.position--;
         } else {
           if ( stop === 0 ) {
-            if ( this._next(this) === false ) {
+            if ( this._next() === false ) {
               return;
             }
           }
           this.async( function() { 
             this._type(); 
-          }, this._delay( this.typeDelay ) );
+          }.bind(this), this._delay( this.typeDelay ) );
         }
       },
       _delay: function(speed) {
@@ -275,7 +278,7 @@
       },
       _setCurrentString: function() {
         if (!!this.text) {
-          this._current.string = this.text[this._current.index]; // .replace(/\n/g, "\\n");
+          this._current.str = this.text[this._current.index]; // .replace(/\n/g, "\\n");
         }
       },
       _animateCursor: function() {
