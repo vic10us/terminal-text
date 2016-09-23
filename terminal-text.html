@@ -57,6 +57,13 @@
           value: 100
         },
         /**
+         * Minimum delay, in ms, before clearing characters to resume next.
+         */
+        clearDelay: {
+          type: Number,
+          value: 10
+        },
+        /**
          * Minimum delay, in ms, between deleting characters.
          */
         backDelay: {
@@ -68,7 +75,8 @@
          */
         blinkSpeed: {
           type: Number,
-          value: 500
+          value: 500,
+          observer: '_blinkSpeedChanged'
         },
         /**
          * Character used to represent the cursor.
@@ -136,9 +144,15 @@
             loop: 0
           }
         },
+        value: {
+          type: String,
+          value: '',
+          notify: true
+        },
         _output: {
           type: String,
-          value: ''
+          value: '',
+          observer: '_outputChanged'
         },
         _cursorAnimation: {
           type: Object,
@@ -213,11 +227,11 @@
             this.async( function() { this._backspace(); }, this._delay( this.backDelay ) );
           }, this.delay );
         } else {
-          this._output = '';
           if ( this._next() ) {
             this.async( function() {
-              this.async( function() { this._type(); }, this._delay( this.typeDelay ) );
-            }, this.delay );
+              this._output = '';
+              this._type();
+            }, this.clearDelay );
           } else if ( typeof( this.callbackFinished ) == 'function' ) {
             this.callbackFinished( object );
           }
@@ -247,7 +261,7 @@
           }, this._delay( this.typeDelay ) );
         }
       },
-      _delay: function(speed, t) {
+      _delay: function(speed) {
         var time = parseInt( speed );
         if ( this.humanize ) {
           time += Math.floor( Math.random() * 200 );
@@ -292,6 +306,16 @@
         if (!!b) {
           this._animateCursor();
         }
+      },
+      _blinkSpeedChanged: function(n, o){
+        if (!!n && !!this._cursorAnimation) {
+          this._cursorAnimation.cancel();
+          this._cursorAnimation = null;
+          this._animateCursor();
+        }
+      },
+      _outputChanged: function(n) {
+        this.value = n;
       },
       observers: [
         '_blinkChanged(blink)'
