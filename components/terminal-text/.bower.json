@@ -1,0 +1,29 @@
+{
+  "name": "terminal-text",
+  "authors": [
+    "Keith Hill <keith@dexs.ca>"
+  ],
+  "description": "An element that simulates the old-school terminals of the 70s and 80s",
+  "main": "terminal-text.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "web-animations-js": "^2.2.2"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  },
+  "homepage": "https://github.com/vic10us/terminal-text",
+  "_release": "f2535929d7",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "f2535929d72a856bb627eab2832ba4362d1a5707"
+  },
+  "_source": "git://github.com/vic10us/terminal-text.git",
+  "_target": "master",
+  "_originalSource": "vic10us/terminal-text",
+  "_direct": true
+}
