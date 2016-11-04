@@ -4,6 +4,7 @@
   "authors": [
     "Keith Hill <keith@dexs.ca>"
   ],
+  "license": "MIT",
   "description": "An element that simulates the old-school terminals of the 70s and 80s",
   "main": "terminal-text.html",
   "dependencies": {
