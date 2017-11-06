@@ -5,25 +5,21 @@
 <dom-module id="terminal-text">
   <template>
     <style>
-
       :host {
         display: block;
         --terminal-text-text-color0: var(--terminal-text-text-color, #000000);
         --terminal-text-pre-text-color0: var(--terminal-text-pre-text-color, #000000);
         --terminal-text-cursor-color0: var(--terminal-text-cursor-color, #000000);
       }
-
       .cursor {
         color: var(--terminal-text-cursor-color0);
         font-weight: 600;
       }
-      
       .animated-text {
         white-space: pre-line;
         color: var(--terminal-text-text-color0);
         @apply --terminal-text-text;
       }
-
       .pre-text {
         color: var(--terminal-text-pre-text-color0);
         font-weight: 600;
@@ -33,14 +29,21 @@
     <span class="pre-text">
       <slot>[[prefix]]</slot>
     </span>
-    <span class="animated-text">[[ textFormat(_output) ]]<span id="cursor" hidden$="[[!showCursor]]" class="cursor">[[cursor]]</span>
+    <span class="animated-text">[[ _outputText ]]<span id="cursor" hidden$="[[!showCursor]]" class="cursor">[[cursor]]</span>
   </template>
 
   <script>
+    /**
+     * # Awesome Retro Terminal Text Element
+     * `<terminal-text>`
+     * An element that simulates the old-school terminals of the 70s and 80s
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
     class TerminalText extends Polymer.Element {
-
       static get is() {return 'terminal-text'}
-
       static get properties() { 
         return {
           _version: {
@@ -49,7 +52,7 @@
             value: 'v2.0.0'
           },
           /**
-          * 	List of strings to output.
+          * List of strings to output.
           */
           text: {
             type: Array,
@@ -142,7 +145,14 @@
             type: Boolean,
             value: true
           },
-
+          /**
+          * The current value in the text buffer
+          */
+          value: {
+            type: String,
+            value: '',
+            notify: true
+          },
           _current: {
             type: Object,
             value: function() {
@@ -154,10 +164,9 @@
               };
             }
           },
-          value: {
+          _outputText: {
             type: String,
-            value: '',
-            notify: true
+            computed: '_textFormat(_output)'
           },
           _output: {
             type: String,
@@ -171,7 +180,7 @@
         }
       }
 
-      textFormat(txt) {
+      _textFormat(txt) {
         return txt;
       }
 
@@ -254,10 +263,8 @@
             }.bind(this), this.clearDelay );
           }
           this.dispatchEvent(new CustomEvent('terminal-text-finished', { bubbles: true, composed: true, detail: { value: this._output } }));
-          // this.fire('terminal-text-finished', { value: this._output });
         }
         this.dispatchEvent(new CustomEvent('terminal-text-type', { bubbles: true, composed: true, detail: { letter: letter, current: this._current } }));
-        // this.fire('terminal-text-type', { letter: letter, current: this._current });
       }
 
       _backspace(stop) {
@@ -352,6 +359,23 @@
           '_blinkChanged(blink)'
         ];
       }
+
+
+      /**
+      * Fired when `element` changes its awesomeness level.
+      *
+      * @event terminal-text-finished
+      * @param {string} value The output text value
+      */
+
+      /**
+      * Fired when `terminal-text` character is typed.
+      *
+      * @event terminal-text-type
+      * @param {string} letter The letter that was typed
+      * @param {string} current The current text buffer
+      */
+
     }
 
     window.customElements.define(TerminalText.is, TerminalText);
