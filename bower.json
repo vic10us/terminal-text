@@ -7,6 +7,7 @@
   "license": "MIT",
   "description": "An element that simulates the old-school terminals of the 70s and 80s",
   "main": "terminal-text.html",
+  "homepage": "https://www.webcomponents.org/element/vic10us/terminal-text",
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
     "web-animations-js": "^2.3.1"
