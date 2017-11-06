@@ -1,6 +1,6 @@
 {
   "name": "terminal-text",
-  "version": "1.0.9",
+  "version": "2.0.0",
   "authors": [
     "Keith Hill <keith@dexs.ca>"
   ],
@@ -8,13 +8,15 @@
   "description": "An element that simulates the old-school terminals of the 70s and 80s",
   "main": "terminal-text.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.4.0",
-    "web-animations-js": "^2.2.2"
+    "polymer": "Polymer/polymer#^2.0.0",
+    "web-animations-js": "^2.3.1"
   },
   "devDependencies": {
-    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
-    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
-    "web-component-tester": "^4.0.0",
-    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
+    "web-component-tester": "Polymer/web-component-tester#^6.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0"
+  },
+  "resolutions": {
+    "polymer": "^2.0.0"
   }
 }
