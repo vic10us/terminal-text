@@ -5,10 +5,10 @@
     <title>terminal-text test</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script src="../../../wct-browser-legacy/browser.js"></script>
 
-    <link rel="import" href="../terminal-text.html">
+    <script type="module" src="../terminal-text.js"></script>
   </head>
   <body>
 
@@ -18,15 +18,16 @@
       </template>
     </test-fixture>
 
-    <script>
-      suite('terminal-text', function() {
+    <script type="module">
+import '../terminal-text.js';
+suite('terminal-text', function() {
 
-        test('instantiating the element works', function() {
-          let element = fixture('basic');
-          assert.equal(element.is, 'terminal-text');
-        });
+  test('instantiating the element works', function() {
+    let element = fixture('basic');
+    assert.equal(element.is, 'terminal-text');
+  });
 
-      });
-    </script>
+});
+</script>
   </body>
 </html>

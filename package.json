@@ -1,0 +1,24 @@
+{
+  "description": "An element that simulates the old-school terminals of the 70s and 80s",
+  "homepage": "https://www.webcomponents.org/element/vic10us/terminal-text",
+  "name": "@vic10us/terminal-text",
+  "version": "3.0.0",
+  "resolutions": {
+    "inherits": "2.0.3",
+    "samsam": "1.1.3",
+    "supports-color": "3.1.2",
+    "type-detect": "1.0.0"
+  },
+  "main": "terminal-text.js",
+  "author": "Keith Hill <keith@dexs.ca>",
+  "license": "MIT",
+  "dependencies": {
+    "@polymer/polymer": "^3.0.0",
+    "web-animations-js": "^2.3.1"
+  },
+  "devDependencies": {
+    "@polymer/iron-demo-helpers": "^3.0.0",
+    "wct-browser-legacy": "^1.0.1",
+    "@webcomponents/webcomponentsjs": "^2.0.0"
+  }
+}

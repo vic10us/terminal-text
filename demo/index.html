@@ -3,16 +3,27 @@
 		<title>Polymer terminal-text Demo</title>
 		<link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
 
-        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+        <script src="../../../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-        <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-        <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-        <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
-        <link rel="import" href="../terminal-text.html">
+        <script type="module" src="../../../node_modules/@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
+        <script type="module" src="../../../node_modules/@polymer/iron-demo-helpers/demo-snippet.js"></script>
+        <script type="module" src="../../../node_modules/@polymer/polymer/lib/elements/dom-bind.js"></script>
+        <script type="module" src="../terminal-text.js"></script>
 
 		<meta name="viewport" content="width=800" />
 
-        <custom-style>
+        <!-- FIXME(polymer-modulizer):
+        These imperative modules that innerHTML your HTML are
+        a hacky way to be sure that any mixins in included style
+        modules are ready before any elements that reference them are
+        instantiated, otherwise the CSS @apply mixin polyfill won't be
+        able to expand the underlying CSS custom properties.
+        See: https://github.com/Polymer/polymer-modulizer/issues/154
+        -->
+    <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<custom-style>
             <style is="custom-style" include="demo-pages-shared-styles">
                 demo-snippet {
                     color: #424242;
@@ -20,14 +31,30 @@
                 h1 { margin: 0; padding: 0; }
                 #fork-me { position: absolute; top: 0; right: 0; border: 0; }
             </style>
-        </custom-style>
+        </custom-style>`;
 
-        <style is="custom-style">
-		</style>
+document.body.appendChild($_documentContainer.content);
+</script>
+
+        <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<style is="custom-style">
+		</style>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
 	</head>
 	<body>
-        <h1>Polymer terminal-text</h1>
-        <demo-snippet>
+        <script type="module">
+const $_documentContainer = document.createElement('template');
+$_documentContainer.innerHTML = `<h1>Polymer terminal-text</h1>`;
+document.body.appendChild($_documentContainer.content);
+</script>
+        <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<demo-snippet>
             <template>
                 <style>
                     terminal-text {
@@ -43,17 +70,26 @@
                     }
                 </style>
                 <terminal-text 
-                    id="tt"
-                    clear-delay="500"
-                    back-delay="10"
+                    id="tt" 
+                    clear-delay="500" 
+                    back-delay="10" 
                     blink-speed="250"
                     value="{{output}}"
-                    text='["^250.^250.^250.^500","auti~1o^500 type terminal commands.","including new lines,\npauses^2000, character deletion^250~20 and other features."," auto delete^2000, customisable cursor.|_^2000|▋"," and loads^150~5^150 more..."," what will you do?"]'>
-                [terminal-text ~]$</terminal-text>
+                    text="[&quot;^250.^250.^250.^500&quot;,&quot;auti~1o^500 type terminal commands.&quot;,&quot;including new lines,\\npauses^2000, character deletion^250~20 and other features.&quot;,&quot; auto delete^2000, customisable cursor.|_^2000|▋&quot;,&quot; and loads^150~5^150 more...&quot;,&quot; what will you do?&quot;]">
+                [terminal-text ~]\$</terminal-text>
             </template>
-        </demo-snippet>
-        <a id="fork-me" href="https://github.com/vic10us/terminal-text">
-			<img src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png" />
-        </a>
+        </demo-snippet>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
+        <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<a id="fork-me" href="https://github.com/vic10us/terminal-text">
+			<img src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png">
+        </a>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
     </body>
 </html>
